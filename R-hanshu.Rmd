@@ -1,0 +1,58 @@
+```{r}
+library(tidyverse)
+library(here)
+readLines(here("data","sub01.log"))%>% #这个是管道操作。
+str_detect("RT")%>%
+which()
+#先按行读取 然后分出两个表来  确定各自的起始，再依次读取。
+#对文本信息进行定位，确定要寻找的内容
+#stringr 处理字符串的  在tidyverse里面
+readLines(here("data","sub01.log"))%>% #这个是管道操作。
+str_detect("RT")%>%
+which()->table2_start
+
+readLines(here("data","sub01.log"))%>% #这个是管道操作。
+str_detect("Subject")%>%
+which()->table1_start
+
+table1_end<-table2_start-2
+table2_end<-length(readLines(here("data","sub01.log")))
+
+raw_text<-readLines(here("data","sub01.log"))
+writeLines(raw_text[table1_start:table1_end],here("output","sub01.table1.txt"))
+#开始封装函数以进行批处理
+xuehuixiehanshu<-function(filename,outputname){library(tidyverse)
+library(here)
+readLines(here("data",filename))%>% #这个是管道操作。
+str_detect("RT")%>%
+which()
+#先按行读取 然后分出两个表来  确定各自的起始，再依次读取。
+#对文本信息进行定位，确定要寻找的内容
+#stringr 处理字符串的  在tidyverse里面
+readLines(here("data",filename))%>% #这个是管道操作。
+str_detect("RT")%>%
+which()->table2_start
+
+readLines(here("data",filename))%>% #这个是管道操作。
+str_detect("Subject")%>%
+which()->table1_start
+
+table1_end<-table2_start-2
+table2_end<-length(readLines(here("data",filename)))
+
+raw_text<-readLines(here("data",filename))
+writeLines(raw_text[table1_start:table1_end],here("output",outputname))}
+
+xuehuixiehanshu(sub02.log,sub02.table1.txt)
+
+#开始写循环
+subs<-c("sub01","sub02")
+for(i in subs){
+  filename<-paste0(i,".log")
+  outputname<-paste0(i,".table1_new.txt")
+  xuehuixiehanshu(filename,outputname)
+  }
+
+
+```
+
